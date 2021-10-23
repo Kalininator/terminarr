@@ -1,49 +1,43 @@
-// #[macro_use]
-// extern crate structopt;
-
 // use std::path::PathBuf;
 use structopt::StructOpt;
 
-// #[derive(StructOpt, Debug)]
-// #[structopt(name = "git", about = "the stupid content tracker")]
-// enum Git {
-//     #[structopt(name = "add")]
-//     Add {
-//         #[structopt(short = "i")]
-//         interactive: bool,
-//         #[structopt(short = "p")]
-//         patch: bool,
-//         #[structopt(parse(from_os_str))]
-//         files: Vec<PathBuf>,
-//     },
-//     #[structopt(name = "fetch")]
-//     Fetch {
-//         #[structopt(long = "dry-run")]
-//         dry_run: bool,
-//         #[structopt(long = "all")]
-//         all: bool,
-//         repository: Option<String>,
-//     },
-//     #[structopt(name = "commit")]
-//     Commit {
-//         #[structopt(short = "m")]
-//         message: Option<String>,
-//         #[structopt(short = "a")]
-//         all: bool,
-//     },
-// }
+#[derive(StructOpt)]
+struct Terminarr {
+    #[structopt(subcommand)] // Note that we mark a field as a subcommand
+    cmd: Command,
+}
 
-#[derive(StructOpt, Debug)]
-#[structopt(name = "terminarr", about = "Manage *arrs")]
-enum Terminarr {
-    #[structopt(name = "status")]
+#[derive(StructOpt)]
+enum Command {
+    Radarr(Radarr),
+}
+
+// Subcommand can also be externalized by using a 1-uple enum variant
+#[derive(StructOpt)]
+struct Radarr {
+    #[structopt(subcommand)] // Note that we mark a field as a subcommand
+    radarr_command: RadarrCommand,
+}
+
+// subsubcommand!
+#[derive(StructOpt)]
+enum RadarrCommand {
     Status {},
 }
 
+fn handle_radarr(radarr: Radarr) {
+    match radarr.radarr_command {
+        RadarrCommand::Status {} => {
+            println!("Radarr status",);
+        }
+    }
+}
+
 fn main() {
-    match Terminarr::from_args() {
-        Terminarr::Status {} => {
-            println!("Get status");
-        } // _ => (),
+    let opts = Terminarr::from_args();
+    match opts.cmd {
+        Command::Radarr(radarr) => {
+            handle_radarr(radarr);
+        }
     }
 }
